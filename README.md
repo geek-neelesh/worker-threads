@@ -1,4 +1,4 @@
-# Node.js Assessment — Insurance Policy Service
+# worker thread — Insurance Policy Service
 
 Express + MongoDB (Mongoose) service implementing:
 
@@ -9,7 +9,7 @@ Express + MongoDB (Mongoose) service implementing:
 
 ```bash
 npm install
-cp .env .env.local   # or edit .env
+cp .env or edit .env
 ```
 
 Set `MONGO_URI` in `.env`, or run without a local MongoDB using the in-memory server:
@@ -45,9 +45,7 @@ curl http://localhost:3000/api/policies/aggregate
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/messages/schedule` | Body `{ "message", "day", "time" }`. `day` accepts `today`, `tomorrow`, a weekday (`monday`…) or a date (`2026-09-30`); `time` accepts `HH:mm` or `h:mm AM/PM`. The message is inserted into `messages` at that time. |
-| GET | `/api/messages` | Messages inserted by the scheduler. |
-| GET | `/api/messages/jobs` | Scheduled job status (`pending`/`inserted`/`failed`). |
+| POST | `/api/messages/schedule` | Body `{ "message", "day", "time" }`. `day` accepts `today`, `tomorrow`, a weekday (`monday`…) or a date (`2026-09-30`); `time` accepts `HH:mm` or `h:mm AM/PM`. The message is inserted into `messages` at that time.
 
 ```bash
 curl -X POST http://localhost:3000/api/messages/schedule \
@@ -56,15 +54,6 @@ curl -X POST http://localhost:3000/api/messages/schedule \
 ```
 
 Pending jobs are persisted in `scheduledjobs` and re-armed on restart.
-
-## CPU monitor
-
-`src/index.js` forks `src/server.js` and respawns it on exit. The server
-monitors its own CPU with `process.cpuUsage()` deltas
-(`src/services/cpuMonitor.js`) every `CPU_CHECK_INTERVAL_MS` (default 5s).
-Two consecutive readings ≥ `CPU_LIMIT` (default 70%) trigger a graceful
-shutdown — HTTP/Mongo connections close, the process exits, and the
-supervisor forks a fresh server.
 
 ## Layout
 
